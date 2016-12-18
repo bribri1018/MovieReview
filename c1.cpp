@@ -43,7 +43,6 @@ int prompt() {
 // Prompt for word, and then print count and score
 int option1() {
     string target;
-    cout << "You chose option 1" << endl;
     cout << "What word should I check?" << endl;
     cin >> target;
 
@@ -83,7 +82,6 @@ int option2(int option) {
     set<string> targets;
     map<string, float> target_score;
     map<string, float> target_count;
-    cout << "You chose option 2" << endl;
     cout << "Give me the filename" << endl;
     string filename;
     cin >> filename;
@@ -98,9 +96,6 @@ int option2(int option) {
     }
     target_file.close();
     int num_words = targets.size();
-    // for (string str : targets) {
-    //     cout << str << endl;
-    // }
     ifstream fin("movieReviews.txt");
     string line;
     // variable to avoid double counting
@@ -139,9 +134,15 @@ int option2(int option) {
             neg_score = temp_score;
             neg_word = str;
         }
-        file_score += temp_score
+        file_score += temp_score;
     }
     file_score = file_score/num_words;
+
+    if (option == 1) {
+        cout << "Most positive word is: " << pos_word << " with score " << pos_score << endl;
+        cout << "Most negative word is: " << neg_word << " with score " << neg_score << endl;
+        return 1;
+    }
 
     string sentiment = "positive";
     if (file_score < 2) {
@@ -156,10 +157,7 @@ int option2(int option) {
 
 // Prompt for file, then print mose negative and most positive word
 int option3() {
-    cout << "You chose option 3" << endl;
-
-    cout << endl << endl;
-    return 1;
+    return option2(1);
 }
 
 int exit() {
