@@ -3,12 +3,13 @@
 #include <string>
 #include <fstream>
 #include <map>
+#include <set>
 
 //string::npos
 void test(std::string k);
 int prompt();
 int option1();
-int option2();
+int option2(int option);
 int option3();
 int exit();
 
@@ -22,12 +23,6 @@ int main() {
             return 0;
         }
     }
-
-    string a = "My name is Brian";
-    cout << a.find("Z") << "\n";
-    cout << "\n";
-
-    test("this is a test\n");
     return 0;
 }
 
@@ -39,14 +34,14 @@ int prompt() {
     cin >> option;
     switch (option) {
         case 1: return option1();
-        case 2: return option2();
+        case 2: return option2(0);
         case 3: return option3();
         case 4: return exit();
     }
 }
 
 // Prompt for word, and then print count and score
-int option1(){
+int option1() {
     string target;
     cout << "You chose option 1" << endl;
     cout << "What word should I check?" << endl;
@@ -84,10 +79,78 @@ int option1(){
 }
 
 // Prompt for file, then print average score and sentiment
-int option2() {
+int option2(int option) {
+    set<string> targets;
+    map<string, float> target_score;
+    map<string, float> target_count;
     cout << "You chose option 2" << endl;
+    cout << "Give me the filename" << endl;
+    string filename;
+    cin >> filename;
 
-    cout << endl << endl;    
+    ifstream target_file(filename.c_str());
+    string target;
+    while (target_file) {
+        target_file >> target;
+        targets.insert(target);
+        target_score[target] = 0;
+        target_count[target] = 0;
+    }
+    target_file.close();
+    int num_words = targets.size();
+    // for (string str : targets) {
+    //     cout << str << endl;
+    // }
+    ifstream fin("movieReviews.txt");
+    string line;
+    // variable to avoid double counting
+    bool already_added = false;
+    while (getline(fin, line)) {
+        istringstream is(line);
+        string temp_word;
+        int score = 0;
+        is >> score;
+        while (!is.eof()) {
+            is >> temp_word;
+            if ((targets.find(temp_word) != targets.end()) and 
+                !already_added) {
+                target_count[temp_word] += 1;
+                target_score[temp_word] += score;
+                already_added = true;
+            }
+        }
+        already_added = false;
+    }
+    fin.close();
+
+    float file_score = 0;
+    string pos_word;
+    string neg_word;
+    float pos_score = 0;
+    float neg_score = 4;
+    float temp_score;
+    for (string str : targets) {
+        temp_score = target_score[str] / target_count[str];
+        if (temp_score > pos_score) {
+            pos_score = temp_score;
+            pos_word = str;
+        }
+        if (temp_score < neg_score) {
+            neg_score = temp_score;
+            neg_word = str;
+        }
+        file_score += temp_score
+    }
+    file_score = file_score/num_words;
+
+    string sentiment = "positive";
+    if (file_score < 2) {
+        sentiment = "negative";
+    }
+    cout << "The avg score of " << filename << " is " << file_score << endl;
+    cout << "Overall sentiment is " << sentiment << endl;
+
+    cout << endl << endl;
     return 1;
 }
 
@@ -97,10 +160,6 @@ int option3() {
 
     cout << endl << endl;
     return 1;
-}
-
-void test(std::string k) {
-    cout << k;
 }
 
 int exit() {
