@@ -37,6 +37,9 @@ int prompt() {
         case 2: return option2(0);
         case 3: return option3();
         case 4: return exit();
+        default:
+                cout << "Not a recognized option." << endl << endl;
+                return 1;
     }
 }
 
@@ -161,6 +164,6 @@ int option3() {
 }
 
 int exit() {
-    std::cout << "Bye..." << std::endl << std::endl;
+    cout << "Bye..." << endl << endl;
     return 0;
 }
